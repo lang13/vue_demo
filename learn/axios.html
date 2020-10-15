@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>axios实验</title>
+    <!--    引入vue-->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!--    引入axios-->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <input type="button" class="getJoke" value="获取笑话" @click="getJoke"></input>
+        <p v-for="(item,index) in jokes.jokes">{{ index + 1 }}.{{ item }}</p>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                jokes: []
+            },
+            methods: {
+                getJoke: function () {
+                    axios.get("https://autumnfish.cn/api/joke/list?num=3").then(
+                        (response) => {
+                            this.jokes = response.data;
+                            console.log(response.data)
+                        },
+                        function (err) {
+                            console.log(err)
+                        }
+                    )
+                }
+            }
+        })
+    </script>
+</body>
+</html>
