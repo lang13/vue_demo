@@ -106,71 +106,27 @@
     <div id="app">
         <h1>天知道</h1>
         <div class="search">
-            <input>
-            <button @click="getWeather">查 询</button>
+            <input v-model="city" placeholder="请输入要查询的城市">
+            <button @click="getWeather" @keyup.enter="getWeather">查 询</button>
         </div>
         <div class="hotkey">
-            <a href="#">北京</a>
-            <a href="#">上海</a>
-            <a href="#">广州</a>
-            <a href="#">深圳</a>
+            <a href="#" @click="changeCity('北京')">北京</a>
+            <a href="#" @click="changeCity('上海')">上海</a>
+            <a href="#" @click="changeCity('广州')">广州</a>
+            <a href="#" @click="changeCity('深圳')">深圳</a>
             <span style="clear: left"></span>
         </div>
         <div class="content">
             <ul>
-                <li class="divider">
-                    <div class="info_type">晴</div>
+                <li :class="{divider:index != 0}" v-for="(item,index) in weather.forecast">
+                    <div class="info_type">{{ item.type }}</div>
                     <div class="info_temp">
-                        低温22℃
+                        {{ item.low }}
                         ~
-                        高温29℃
+                        {{ item.high }}
                     </div>
                     <div class="info_data">
-                        2日星期六
-                    </div>
-                </li>
-                <li class="divider">
-                    <div class="info_type">晴</div>
-                    <div class="info_temp">
-                        低温22℃
-                        ~
-                        高温29℃
-                    </div>
-                    <div class="info_data">
-                        2日星期六
-                    </div>
-                </li>
-                <li class="divider">
-                    <div class="info_type">晴</div>
-                    <div class="info_temp">
-                        低温22℃
-                        ~
-                        高温29℃
-                    </div>
-                    <div class="info_data">
-                        2日星期六
-                    </div>
-                </li>
-                <li class="divider">
-                    <div class="info_type">晴</div>
-                    <div class="info_temp">
-                        低温22℃
-                        ~
-                        高温29℃
-                    </div>
-                    <div class="info_data">
-                        2日星期六
-                    </div>
-                </li>
-                <li class="divider">
-                    <div class="info_type">晴</div>
-                    <div class="info_temp">
-                        低温22℃
-                        ~
-                        高温29℃
-                    </div>
-                    <div class="info_data">
-                        2日星期六
+                        {{ item.date }}
                     </div>
                 </li>
             </ul>
@@ -179,14 +135,29 @@
     <script>
         var app = new Vue({
             el: "#app",
-            data: {},
+            data: {
+                city: "广州",
+                weather: []
+            },
+            // 钩子函数，在所有DOM实例创建完（但还未渲染）后调用
+            created() {
+                this.getWeather()
+            },
             methods: {
                 getWeather: function () {
-                    axios.get("http://wthrcdn.etouch.cn/weather_mini?city=广州").then(
+                    axios.get("http://wthrcdn.etouch.cn/weather_mini?city=" + this.city).then(
                         (response) => {
+                            this.weather = response.data.data;
                             console.log(response.data.data);
+                        },
+                        function (err) {
+                            console.log(err);
                         }
                     )
+                },
+                changeCity: function (city) {
+                    this.city = city;
+                    this.getWeather();
                 }
             }
         })
