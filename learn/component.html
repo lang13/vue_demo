@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件小demo</title>
+    <!--    引入vue-->
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <!--    引入axios-->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!--    单个自定义插件-->
+        <!--    这样直接将item放进去是无效的：<my-component-li v-for="item in appItem">{{ item }}</my-component-li>-->
+        <my-component-li v-for="item in appItem" :item="item"></my-component-li>
+
+        <!--    定义多个组件-->
+        <br>
+        <todo>
+            <my-title slot="todo-title" v-bind:value="title"></my-title>
+            <item slot="todo-item"
+                  v-for="(item, index) in appItem" v-bind:item-value="item"
+                  @todo-remove="removeItem(index)"></item>
+        </todo>
+    </div>
+    <script>
+        //注册组件
+        Vue.component("my-component-li", {
+            //类似于自定义参数
+            props: ["item"],
+            //组件的样式
+            template: "<li>Hello {{item}}</li>"
+        })
+
+        // 定义多个插件
+        Vue.component("todo", {
+            template: `
+                <div>
+                    <slot name="todo-title"></slot>
+                    <ul>
+                        <slot name="todo-item"></slot>
+                    </ul>
+                </div>
+            `
+        })
+
+        Vue.component("item", {
+            props: ["itemValue"],
+            template: "<li>{{ itemValue }} <button @click='remove'>删除</button></li>",
+            methods: {
+                remove: function () {
+                    // 触发当前实例上的事件，包括自定义事件
+                    this.$emit("todo-remove")
+                }
+            }
+        })
+
+        Vue.component("my-title", {
+            props: ["value"],
+            template: "<div>{{ value }}</div>"
+        })
+
+        var app = new Vue({
+            el: "#app",
+            data: {
+                title: "自定义组件",
+                appItem: ["北京", "上海", "广州", "深圳"]
+            },
+            methods: {
+                removeItem: function (index) {
+                    this.appItem.splice(index, 1);
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
